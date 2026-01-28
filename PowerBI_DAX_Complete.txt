@@ -1,0 +1,206 @@
+# Power BI - All DAX Formulas Ready to Copy/Paste
+
+## STEP 1: Basic Measures (Copy these first)
+
+### In Patients Table:
+```dax
+Total Patients = COUNT(Patients[patient_id])
+```
+
+```dax
+Average Age = AVERAGE(Patients[age])
+```
+
+```dax
+Average BMI = AVERAGE(Patients[bmi])
+```
+
+```dax
+Smokers Percentage = 
+DIVIDE(
+    CALCULATE(COUNT(Patients[patient_id]), Patients[smoker_status] = "yes"),
+    COUNT(Patients[patient_id]),
+    0
+) * 100
+```
+
+```dax
+Male Patients = CALCULATE(COUNT(Patients[patient_id]), Patients[gender] = "Male")
+```
+
+```dax
+Female Patients = CALCULATE(COUNT(Patients[patient_id]), Patients[gender] = "Female")
+```
+
+## STEP 2: Calculated Columns
+
+### Add to Patients table:
+```dax
+BMI Category = 
+SWITCH(
+    TRUE(),
+    Patients[bmi] < 18.5, "Underweight",
+    Patients[bmi] < 25, "Normal",
+    Patients[bmi] < 30, "Overweight",
+    "Obese"
+)
+```
+
+```dax
+Risk Level = 
+SWITCH(
+    TRUE(),
+    Patients[bmi] >= 30 && Patients[smoker_status] = "yes", "High Risk",
+    Patients[bmi] >= 25 && Patients[smoker_status] = "yes", "Medium Risk",
+    Patients[bmi] >= 30 || Patients[smoker_status] = "yes", "Medium Risk",
+    "Low Risk"
+)
+```
+
+## STEP 3: Visit Measures
+
+### In Visits Table:
+```dax
+Total Visits = COUNT(Visits[visit_id])
+```
+
+```dax
+Average Length of Stay = AVERAGE(Visits[length_of_stay])
+```
+
+```dax
+Average Severity Score = AVERAGE(Visits[severity_score])
+```
+
+```dax
+High Severity Visits = CALCULATE(COUNT(Visits[visit_id]), Visits[severity_score] >= 7)
+```
+
+## STEP 4: Risk Analysis Measures
+
+```dax
+High Risk Patients = CALCULATE(COUNT(Patients[patient_id]), Patients[Risk Level] = "High Risk")
+```
+
+```dax
+Medium Risk Patients = CALCULATE(COUNT(Patients[patient_id]), Patients[Risk Level] = "Medium Risk")
+```
+
+```dax
+Low Risk Patients = CALCULATE(COUNT(Patients[patient_id]), Patients[Risk Level] = "Low Risk")
+```
+
+```dax
+High Risk Percentage = 
+DIVIDE([High Risk Patients], [Total Patients], 0) * 100
+```
+
+## STEP 5: BMI Analysis
+
+```dax
+Underweight Patients = CALCULATE(COUNT(Patients[patient_id]), Patients[bmi] < 18.5)
+```
+
+```dax
+Normal Weight Patients = CALCULATE(COUNT(Patients[patient_id]), Patients[bmi] >= 18.5 && Patients[bmi] < 25)
+```
+
+```dax
+Overweight Patients = CALCULATE(COUNT(Patients[patient_id]), Patients[bmi] >= 25 && Patients[bmi] < 30)
+```
+
+```dax
+Obese Patients = CALCULATE(COUNT(Patients[patient_id]), Patients[bmi] >= 30)
+```
+
+## STEP 6: Prescription Measures
+
+```dax
+Total Prescriptions = COUNT(Prescriptions[prescription_id])
+```
+
+```dax
+Prescriptions per Visit = 
+DIVIDE([Total Prescriptions], [Total Visits], 0)
+```
+
+---
+
+## 📊 DASHBOARD LAYOUTS
+
+### Dashboard Page 1: Demographics
+
+**Visuals to Add:**
+1. **Card** - Total Patients
+2. **Card** - Average Age  
+3. **Card** - Average BMI
+4. **Card** - Smokers Percentage
+5. **Clustered Column Chart** - age_group (X) vs Total Patients (Y)
+6. **Donut Chart** - gender (Legend) vs Total Patients (Values)
+7. **Bar Chart** - BMI Category (Y) vs Total Patients (X)
+8. **Stacked Bar Chart** - Risk Level (Y) vs Total Patients (X)
+9. **Slicer** - gender (Tile style)
+10. **Slicer** - age_group (Dropdown)
+
+### Dashboard Page 2: Clinical Analytics
+
+**Visuals to Add:**
+1. **Card** - Total Visits
+2. **Card** - Average Length of Stay
+3. **Card** - Average Severity Score
+4. **Card** - High Severity Visits
+5. **Bar Chart** - diagnosis_description (Y) vs Count of visits (X) - Top 10
+6. **Column Chart** - severity_score (X) vs Count of visits (Y)
+7. **Column Chart** - length_of_stay bins (X) vs Count of visits (Y)
+8. **Slicer** - severity_score range
+9. **Slicer** - diagnosis_description
+
+### Dashboard Page 3: Risk Assessment
+
+**Visuals to Add:**
+1. **Card** - High Risk Patients
+2. **Card** - Medium Risk Patients  
+3. **Card** - Low Risk Patients
+4. **Card** - High Risk Percentage
+5. **Scatter Chart** - age (X) vs bmi (Y), colored by gender
+6. **Matrix** - smoker_status (Rows) × BMI Category (Columns) vs Count
+7. **100% Stacked Bar** - age_group (Y) vs Total Patients (X), colored by Risk Level
+8. **Slicer** - Risk Level
+
+---
+
+## 🎨 Formatting Settings
+
+**Theme Colors:**
+- Primary Blue: #0078D4
+- Success Green: #107C10  
+- Warning Yellow: #FFB900
+- Danger Red: #D13438
+
+**Card Format:**
+- Callout value: 36pt, Segoe UI Semibold
+- Category label: 12pt, #666666
+- Background: White
+- Border: 1px #E1DFDD
+
+**Chart Titles:**
+- Font: Segoe UI Semibold, 14pt
+- Alignment: Left
+
+---
+
+## ⚡ Quick Setup Checklist
+
+- [ ] Import patients_cleaned.csv (Transform data types)
+- [ ] Import visits_cleaned.csv (Transform data types)
+- [ ] Import prescriptions_cleaned.csv (Transform data types)
+- [ ] Create relationship: Patients[patient_id] → Visits[patient_id]
+- [ ] Create relationship: Visits[visit_id] → Prescriptions[visit_id]
+- [ ] Copy all measures from this file
+- [ ] Create calculated columns (BMI Category, Risk Level)
+- [ ] Create Page 1: Demographics (10 visuals)
+- [ ] Create Page 2: Clinical (9 visuals)
+- [ ] Create Page 3: Risk (8 visuals)
+- [ ] Apply theme colors
+- [ ] Test slicers and cross-filtering
+- [ ] Save as Healthcare_Analytics_Dashboard.pbix
